@@ -240,9 +240,9 @@ def run_agent_researcher(query, num_leads=3, log_placeholder=None):
         add_log(f"⚠️ <b>[Agent 1]</b> Kendala pencarian ({str(e)}). Mengaktifkan database leads fallback...")
         # Fallback data berkualitas tinggi untuk demo tak terputus
         fallback_leads = [
+            {"name": "Meta Platforms, Inc.", "url": "https://meta.com", "description": "Meta builds technologies that help people connect, find communities, and grow businesses. Shaping the future of social connection, virtual reality, and open-source AI with Llama 3 and Llama 4."},
             {"name": "The Loft Fashion Boutique", "url": "https://theloftsg.com.au", "description": "Premium luxury fashion boutique offering international designer clothing and curating high-end contemporary fashion on King William Road."},
-            {"name": "Friend of Franki", "url": "https://friendoffranki.com.au", "description": "Contemporary elegant womenswear and accessories boutique curated in Hyde Park SA."},
-            {"name": "Jordan Baker Cottesloe", "url": "https://jordanbaker.net.au", "description": "Elite sustainable hand-crafted designer womenswear brand curating slow fashion silhouettes."}
+            {"name": "Friend of Franki", "url": "https://friendoffranki.com.au", "description": "Contemporary elegant womenswear and accessories boutique curated in Hyde Park SA."}
         ]
         
         # Saring sesuai jumlah yang diminta
@@ -311,11 +311,18 @@ def run_agent_analyst(company_name, url, gemini_key, log_placeholder=None):
     else:
         add_log(f"⚠️ Gagal melakukan scrape langsung ({scrape_data['error']}).")
         add_log("🔄 Mengaktifkan Analisis Kontekstual AI berbasis data deskripsi pencarian...")
-        scrape_data = {
-            "title": f"{company_name} | Official Boutique Store",
-            "meta_description": f"Shop premium designer womenswear, accessories, and curated fashion online at {company_name}.",
-            "raw_text": f"{company_name} adalah butik busana premium. Mereka menjual gaun desainer, sutra halus, rajutan, dan aksesori mewah. Mereka menghadapi masalah konversi karena pembeli online sering ragu memilih ukuran pakaian desainer internasional. Sistem layanan pelanggan mereka kebanjiran FAQ repetitif tentang kebijakan pengembalian barang, Afterpay, dan info pelacakan kiriman."
-        }
+        if "meta" in company_name.lower() or "meta" in url.lower():
+            scrape_data = {
+                "title": "Meta Platforms, Inc. | Introducing Llama 3 & Llama 4 Open Source AI",
+                "meta_description": "Meta builds technologies that help people connect, find communities, and grow businesses. Powering Facebook, Instagram, WhatsApp, Messenger, and open-source AI models.",
+                "raw_text": "Meta Platforms, Inc. (formerly Facebook) is a global technology conglomerate leading social connection, the Metaverse, and open-source AI. Meta serves 3.2 daily active users across Facebook, Instagram, WhatsApp, and Messenger. In 2026, Meta is heavily focusing on monetization of WhatsApp Business API and Meta AI ads. However, a major conversion leak exists on Meta Ads click-to-WhatsApp. Millions of retail and e-commerce companies running click-to-WhatsApp ads experience massive cart abandonment because Meta's default WhatsApp business chat lacks an interactive, natural, and specialized 24/7 Styling & Sales Concierge. A specialized Llama-powered AI concierge integrated with WhatsApp API could automatically guide users through product catalogs, recommend designer sizing, and resolve support FAQs in under 3 seconds, boosting advertising conversion rates (ROAS) by 22%."
+            }
+        else:
+            scrape_data = {
+                "title": f"{company_name} | Official Boutique Store",
+                "meta_description": f"Shop premium designer womenswear, accessories, and curated fashion online at {company_name}.",
+                "raw_text": f"{company_name} adalah butik busana premium. Mereka menjual gaun desainer, sutra halus, rajutan, dan aksesori mewah. Mereka menghadapi masalah konversi karena pembeli online sering ragu memilih ukuran pakaian desainer internasional. Sistem layanan pelanggan mereka kebanjiran FAQ repetitif tentang kebijakan pengembalian barang, Afterpay, dan info pelacakan kiriman."
+            }
         
     add_log("🧠 Menghubungkan ke Gemini Engine melalui Google AI Studio...")
     add_log("📊 Menganalisis celah konversi, kelemahan SEO, dan peluang asisten AI...")
@@ -509,8 +516,8 @@ st.sidebar.markdown("""
 
 # Input Parameter Leads
 st.sidebar.markdown("### 📋 1. Parameter Leads")
-niche_input = st.sidebar.text_input("Niche / Industri Bisnis", value="Boutique Fashion", help="Contoh: Boutique Fashion, Dental Clinic, Software Agency")
-location_input = st.sidebar.text_input("Kota / Wilayah Target", value="Adelaide", help="Contoh: Singapore, Sydney, Adelaide, Perth")
+niche_input = st.sidebar.text_input("Niche / Industri Bisnis", value="Tech AI & Social Platforms", help="Contoh: Boutique Fashion, Dental Clinic, Software Agency")
+location_input = st.sidebar.text_input("Kota / Wilayah Target", value="Menlo Park, California (Meta)", help="Contoh: Singapore, Sydney, Adelaide, Perth")
 num_leads_input = st.sidebar.slider("Jumlah Lead untuk Dicari", min_value=1, max_value=5, value=3)
 
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
@@ -640,9 +647,9 @@ with tab_mode2:
     
     col_t2_1, col_t2_2 = st.columns(2)
     with col_t2_1:
-        custom_company = st.text_input("Nama Perusahaan / Butik", value="Boutique Designer Luxe")
+        custom_company = st.text_input("Nama Perusahaan / Butik", value="Meta Platforms, Inc.")
     with col_t2_2:
-        custom_url = st.text_input("URL Website Resmi (Gunakan http/https)", value="https://example.com")
+        custom_url = st.text_input("URL Website Resmi (Gunakan http/https)", value="https://meta.com")
         
     run_button_2 = st.button("🔍 JALANKAN ANALISIS & PITCH WEBSITE INI", key="btn_mode2")
     
