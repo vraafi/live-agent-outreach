@@ -596,32 +596,34 @@ provider_selection = st.sidebar.selectbox(
     help="Pilih mesin AI yang ingin Anda gunakan. Jika menggunakan mode tamu, pilih Google AI Studio."
 )
 
-# Dynamic Model Selection based on latest 2026 flagship releases
+# Dynamic Model Selection based on verified 2026 active releases
 if provider_selection == "Google AI Studio":
     model_selection = st.sidebar.selectbox(
-        "Pilih Model Gemini/Gemma",
-        options=["gemini-2.5-flash", "gemini-2.0-pro-exp", "gemini-1.5-flash", "gemini-1.5-pro", "gemma-2-27b-it"],
+        "Pilih Model Gemini/Gemma (Terbaru 2026)",
+        options=["gemini-3.1-pro", "gemini-3.1-flash-lite", "gemini-2.5-pro", "gemini-2.5-flash", "gemma-2-27b-it"],
         index=0,
-        help="Model Gemini/Gemma resmi dari Google AI Studio."
+        help="Model Gemini 3.1 Pro (Februari 2026) & Flash-Lite (Maret 2026) terbaru dari Google AI Studio."
     )
 elif provider_selection == "OpenAI":
     model_selection = st.sidebar.selectbox(
-        "Pilih Model GPT",
-        options=["gpt-4o", "gpt-4-turbo", "gpt-3.5-turbo"],
-        index=0
+        "Pilih Model GPT (Terbaru 2026)",
+        options=["gpt-5.5", "gpt-5.4-thinking", "gpt-5.4-mini", "o3-mini", "gpt-4o"],
+        index=0,
+        help="Model GPT-5.5 Flagship terbaru & GPT-5.4 reasoning model dari OpenAI."
     )
 elif provider_selection == "Anthropic":
     model_selection = st.sidebar.selectbox(
         "Pilih Model Claude (Terbaru 2026)",
         options=["claude-4.7-opus", "claude-3.7-sonnet", "claude-3.5-haiku"],
         index=0,
-        help="Menampilkan model Claude 4.7 Opus terbaru yang dirilis resmi oleh Anthropic pada 16 April 2026!"
+        help="Model Claude 4.7 Opus Flagship terbaru rilisan Anthropic pada 16 April 2026."
     )
 elif provider_selection == "OpenRouter":
     model_selection = st.sidebar.selectbox(
-        "Pilih Model OpenRouter",
-        options=["deepseek/deepseek-r1", "meta-llama/llama-3.3-70b-instruct", "anthropic/claude-4.7-opus"],
-        index=0
+        "Pilih Model OpenRouter (Terbaru 2026)",
+        options=["openai/gpt-5.5", "google/gemini-3.1-pro", "anthropic/claude-4.7-opus", "deepseek/deepseek-r1", "meta-llama/llama-3.3-70b-instruct"],
+        index=0,
+        help="Model global premium terpopuler 2026 melalui OpenRouter."
     )
 
 auth_key_input = st.sidebar.text_input(
