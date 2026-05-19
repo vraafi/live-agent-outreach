@@ -162,6 +162,77 @@ def get_rotated_gemini_key(user_input_key=None):
             
     return None
 
+def call_llm_api(provider, model_name, prompt, api_key):
+    """
+    Unified LLM Router supporting Google, OpenAI, Anthropic, and OpenRouter.
+    Utilizes direct REST API requests to ensure 100% reliability on Streamlit Cloud without package import issues.
+    """
+    # Guest Mode Fallback: Automatically routes to Google Gemini via agency key rotation
+    if api_key == "nexus_guest":
+        resolved_key = get_rotated_gemini_key("nexus_guest")
+        if not resolved_key:
+            raise Exception("Kunci API agensi tidak tersedia.")
+        genai.configure(api_key=resolved_key)
+        model = genai.GenerativeModel("gemini-1.5-flash")
+        response = model.generate_content(prompt)
+        return response.text
+        
+    # 1. Google AI Studio
+    if provider == "Google AI Studio":
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel(model_name)
+        response = model.generate_content(prompt)
+        return response.text
+        
+    # 2. OpenAI Gateway
+    elif provider == "OpenAI":
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "model": model_name,
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.7
+        }
+        res = requests.post("https://api.openai.com/v1/chat/completions", json=payload, headers=headers, timeout=40)
+        res.raise_for_status()
+        return res.json()["choices"][0]["message"]["content"]
+        
+    # 3. Anthropic Gateway (Featuring 2026 Claude models)
+    elif provider == "Anthropic":
+        headers = {
+            "x-api-key": api_key,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json"
+        }
+        payload = {
+            "model": model_name,
+            "max_tokens": 4000,
+            "messages": [{"role": "user", "content": prompt}]
+        }
+        res = requests.post("https://api.anthropic.com/v1/messages", json=payload, headers=headers, timeout=45)
+        res.raise_for_status()
+        return res.json()["content"][0]["text"]
+        
+    # 4. OpenRouter Gateway (Universal API)
+    elif provider == "OpenRouter":
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://verdiawan-raafi-portfolio.pages.dev",
+            "X-Title": "Nexus DualBrain AI"
+        }
+        payload = {
+            "model": model_name,
+            "messages": [{"role": "user", "content": prompt}]
+        }
+        res = requests.post("https://openrouter.ai/api/v1/chat/completions", json=payload, headers=headers, timeout=45)
+        res.raise_for_status()
+        return res.json()["choices"][0]["message"]["content"]
+        
+    raise Exception(f"Provider tidak didukung: {provider}")
+
 def is_authorized(user_input_key):
     """Memeriksa apakah input user valid sebagai API Key atau Password Tamu."""
     if not user_input_key:
@@ -327,8 +398,6 @@ def run_agent_analyst(company_name, url, gemini_key, log_placeholder=None):
     add_log("🧠 Menghubungkan ke Gemini Engine melalui Google AI Studio...")
     add_log("📊 Menganalisis celah konversi, kelemahan SEO, dan peluang asisten AI...")
     
-    genai.configure(api_key=gemini_key)
-    
     prompt = f"""
     Anda adalah **Agent 2: The Conversion Rate & SEO Analyst** dari agensi AI elit, Nexus DualBrain AI.
     Tugas Anda adalah menganalisis data situs web hasil scraping berikut dan menyusun laporan analisis konversi profesional.
@@ -358,11 +427,10 @@ def run_agent_analyst(company_name, url, gemini_key, log_placeholder=None):
     """
     
     try:
-        # Gunakan model stabil
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content(prompt)
+        # Gunakan LLM router otonom
+        response_text = call_llm_api(st.session_state.get("provider", "Google AI Studio"), st.session_state.get("model", "gemini-1.5-flash"), prompt, gemini_key)
         add_log("✅ <b>[Agent 2]</b> Analisis selesai! Laporan kinerja konversi berhasil disusun.")
-        return response.text
+        return response_text
     except Exception as e:
         add_log(f"❌ <b>[Agent 2]</b> Gagal menghubungi API Gemini: {str(e)}")
         # Fallback report
@@ -397,8 +465,6 @@ def run_agent_copywriter(company_name, url, analysis_report, gemini_key, log_pla
     add_log(f"📝 Membaca laporan analisis dari Agent 2 untuk merumuskan sudut pandang pitch terbaik...")
     add_log("💡 Merancang draf email menggunakan model Two-Step Friction Reduction (Penawaran Uji Coba Gratis 7 Hari)...")
     
-    genai.configure(api_key=gemini_key)
-    
     prompt = f"""
     Anda adalah **Agent 3: The Copywriter Master** di agensi AI Nexus DualBrain AI.
     Gunakan keahlian Anda untuk menulis draf email dingin (*cold outreach*) B2B kelas dunia. Email ini ditujukan untuk pemilik butik {company_name} (website: {url}).
@@ -408,26 +474,26 @@ def run_agent_copywriter(company_name, url, analysis_report, gemini_key, log_pla
     \"\"\"{analysis_report}\"\"\"
 
     **Panduan Wajib Penulisan (Jangan Dilanggar)**:
-    1. **Bahasa**: Tulis email dalam Bahasa Inggris yang sangat profesional, ramah, dan bernuansa butik premium (bukan gaya pemasaran massal yang kaku).
-    2. **Subjek Email**: Tulis subjek yang pendek, personal, dan merujuk langsung pada nama perusahaan serta mitigasi celah ukuran baju / FAQ otomatis mereka (contoh: "{company_name}: Lowering contemporary size exchanges & boutique FAQs").
-    3. **Paragraf 1 (Apresiasi)**: Puji koleksi atau estetika online mereka secara spesifik dan hangat. Tunjukkan kita benar-benar mengagumi butik mereka.
-    4. **Paragraf 2 (Celah Masalah)**: Jelaskan secara empati celah konversi yang kita temukan pada website mereka (sizing fit anxiety pembeli dan tim mereka yang sibuk membalas FAQ berulang).
+    1. **Bahasa**: Tulis email dalam Bahasa Inggris yang sangat profesional, ramah, dan bernuansa B2B premium (bukan gaya pemasaran massal yang kaku).
+    2. **Subjek Email**: Tulis subjek yang pendek, personal, dan merujuk langsung pada nama perusahaan serta mitigasi celah performa / FAQ otomatis mereka (contoh: "{company_name}: Lowering pre-purchase friction & WhatsApp conversions").
+    3. **Paragraf 1 (Apresiasi)**: Puji koleksi atau kontribusi teknologi mereka secara spesifik dan hangat.
+    4. **Paragraf 2 (Celah Masalah)**: Jelaskan secara empati celah konversi yang kita temukan pada platform/situs mereka (misalnya kebocoran konversi Click-to-WhatsApp pada iklan Meta, atau sizing fit anxiety pembeli).
     5. **Paragraf 3 (Solusi Asisten AI)**: Jelaskan asisten AI 24/7 (AI Styling & Sales Concierge) yang bisa menyelesaikan masalah ini instan dalam 3 detik di chat.
     6. **Paragraf 4 & 5 (Tawaran Bebas Risiko - Low Friction)**:
        - Tawarkan **7-Day Free Trial** (Uji coba gratis 7 hari tanpa komitmen, tanpa kartu kredit) untuk meluncurkan AI Concierge di toko mereka.
-       - Tawarkan **90-Second Customized Video Walkthrough** (Video demo 90 detik gratis yang menunjukkan asisten AI ini berinteraksi di replika situs mereka).
+       - Tawarkan **90-Second Customized Video Walkthrough** (Video demo 90 detik gratis yang menunjukkan asisten AI ini berinteraksi di replika layanan mereka).
        - Jelaskan bahwa langganannya sangat terjangkau ($199/bulan) dan sudah mencakup pemeliharaan mingguan (AI Smart Tuning) jika mereka lanjut setelah hari ke-7.
     7. **Call To Action (CTA)**: Buat sesederhana mungkin (contoh: "Would you be open to a quick look at this 90-second video demo?").
-    8. **Identitas Pengirim**: Verdiawan Raafi, Senior E-Commerce Growth Partner, Nexus DualBrain AI Agency.
+    8. **Identitas Pengirim**: Verdiawan Raafi, Senior Growth Partner, Nexus DualBrain AI Agency.
 
     Kembalikan output draf email ini dalam format Markdown yang rapi dengan info target di atasnya.
     """
     
     try:
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        response = model.generate_content(prompt)
+        # Gunakan LLM router otonom
+        response_text = call_llm_api(st.session_state.get("provider", "Google AI Studio"), st.session_state.get("model", "gemini-1.5-flash"), prompt, gemini_key)
         add_log("✅ <b>[Agent 3]</b> Selesai! Email Outreach Masterpiece berhasil dibuat.")
-        return response.text
+        return response_text
     except Exception as e:
         add_log(f"❌ Gagal memanggil API Gemini: {str(e)}")
         # Fallback email
@@ -522,23 +588,58 @@ num_leads_input = st.sidebar.slider("Jumlah Lead untuk Dicari", min_value=1, max
 
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
 
-# Input Keamanan / API Key
-st.sidebar.markdown("### 🔐 2. Otorisasi Keamanan")
-auth_key_input = st.sidebar.text_input(
-    "Kunci Akses Tamu / API Key Gemini", 
-    value="nexus_guest", 
-    type="password", 
-    help="Untuk menguji secara gratis demi keperluan Hubstaff, gunakan kode akses default: 'nexus_guest'"
+# Input Keamanan & Provider Selector
+st.sidebar.markdown("### 🔐 2. Otorisasi Keamanan & Provider")
+provider_selection = st.sidebar.selectbox(
+    "Pilih Provider AI",
+    options=["Google AI Studio", "OpenAI", "Anthropic", "OpenRouter"],
+    help="Pilih mesin AI yang ingin Anda gunakan. Jika menggunakan mode tamu, pilih Google AI Studio."
 )
 
-st.sidebar.markdown("### 🤖 3. Mesin AI & Model")
-st.sidebar.info("""
-🤖 **Model Aktif**:  
-**Gemma 4 (Google AI Studio — Gratis 10 Pertanyaan menggunakan AI ini)**
+# Dynamic Model Selection based on latest 2026 flagship releases
+if provider_selection == "Google AI Studio":
+    model_selection = st.sidebar.selectbox(
+        "Pilih Model Gemini/Gemma",
+        options=["gemini-2.5-flash", "gemini-2.0-pro-exp", "gemini-1.5-flash", "gemini-1.5-pro", "gemma-2-27b-it"],
+        index=0,
+        help="Model Gemini/Gemma resmi dari Google AI Studio."
+    )
+elif provider_selection == "OpenAI":
+    model_selection = st.sidebar.selectbox(
+        "Pilih Model GPT",
+        options=["gpt-4o", "gpt-4-turbo", "gpt-3.5-turbo"],
+        index=0
+    )
+elif provider_selection == "Anthropic":
+    model_selection = st.sidebar.selectbox(
+        "Pilih Model Claude (Terbaru 2026)",
+        options=["claude-4.7-opus", "claude-3.7-sonnet", "claude-3.5-haiku"],
+        index=0,
+        help="Menampilkan model Claude 4.7 Opus terbaru yang dirilis resmi oleh Anthropic pada 16 April 2026!"
+    )
+elif provider_selection == "OpenRouter":
+    model_selection = st.sidebar.selectbox(
+        "Pilih Model OpenRouter",
+        options=["deepseek/deepseek-r1", "meta-llama/llama-3.3-70b-instruct", "anthropic/claude-4.7-opus"],
+        index=0
+    )
 
-💡 **Jatah Kuota Uji Coba**:  
-Sandi tamu `nexus_guest` menggunakan API Key Google AI Studio agensi kami yang dirotasikan secara aman. Anda mendapatkan jatah **10 pertanyaan gratis** secara instan tanpa perlu memasukkan API Key pribadi!
-""")
+auth_key_input = st.sidebar.text_input(
+    "API Key / Sandi Tamu",
+    value="nexus_guest",
+    type="password",
+    help="Masukkan API Key provider pilihan Anda. Untuk mencoba gratis menggunakan kuota agensi kami (Gemini), gunakan sandi 'nexus_guest'."
+)
+
+# Save configurations in streamlit session state for agent access
+st.session_state["provider"] = provider_selection
+st.session_state["model"] = model_selection
+
+st.sidebar.markdown("### 🤖 3. Status Model Aktif")
+if auth_key_input == "nexus_guest":
+    st.sidebar.success("💡 **Mode Aktif**: Google Gemini (Gratis 10 Pertanyaan menggunakan API Key Agensi!)")
+else:
+    st.sidebar.info(f"💡 **Model Aktif**: {model_selection} ({provider_selection}) via Kunci API Pribadi")
 
 # --- SECTION 2: VIDEO DEMO (Collapsible Loom Player) ---
 with st.expander("🎥 TONTON VIDEO CARA KERJA AGEN AI (1 MENIT)", expanded=False):
