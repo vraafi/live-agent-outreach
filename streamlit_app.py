@@ -524,9 +524,13 @@ auth_key_input = st.sidebar.text_input(
     help="Untuk menguji secara gratis demi keperluan Hubstaff, gunakan kode akses default: 'nexus_guest'"
 )
 
+st.sidebar.markdown("### 🤖 3. Mesin AI & Model")
 st.sidebar.info("""
-💡 **Info Pengujian Hubstaff**:
-Kunci akses tamu default `nexus_guest` menggunakan API Key Gemini milik agensi kami yang aman dan diputar secara otonom untuk mencegah kuota tersedot. Anda tidak perlu memasukkan kunci pribadi untuk mencoba!
+🤖 **Model Aktif**:  
+**Gemma 4 (Google AI Studio — Gratis 10 Pertanyaan menggunakan AI ini)**
+
+💡 **Jatah Kuota Uji Coba**:  
+Sandi tamu `nexus_guest` menggunakan API Key Google AI Studio agensi kami yang dirotasikan secara aman. Anda mendapatkan jatah **10 pertanyaan gratis** secara instan tanpa perlu memasukkan API Key pribadi!
 """)
 
 # --- SECTION 2: VIDEO DEMO (Collapsible Loom Player) ---
