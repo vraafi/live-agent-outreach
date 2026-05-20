@@ -568,7 +568,7 @@ def run_agent_copywriter(company_name, url, analysis_report, gemini_key, log_pla
        - Tawarkan **90-Second Customized Video Walkthrough** (Video demo 90 detik gratis yang menunjukkan asisten AI ini berinteraksi di replika layanan mereka).
        - Jelaskan bahwa langganannya sangat terjangkau ($199/bulan) dan sudah mencakup pemeliharaan mingguan (AI Smart Tuning) jika mereka lanjut setelah hari ke-7.
     7. **Call To Action (CTA)**: Buat sesederhana mungkin (contoh: "Would you be open to a quick look at this 90-second video demo?").
-    8. **Identitas Pengirim**: Verdiawan Raafi, Senior Growth Partner, Nexus DualBrain AI Agency.
+    8. **Identitas Pengirim**: Evan Fisher, Lead AI Systems Architect, Evan Fisher Engineering.
 
     Kembalikan output draf email ini dalam format Markdown yang rapi dengan info target di atasnya.
     """
@@ -607,9 +607,9 @@ Would you be open to a quick look at this video? No strings attached.
 
 Warm regards,
 
-**Verdiawan Raafi**  
-Senior E-Commerce Growth Partner  
-Nexus DualBrain AI Agency"""
+**Evan Fisher**  
+Elite AI Systems Architect & Freelance MVP  
+Evan Fisher Engineering"""
         add_log("🔄 <b>[Agent 3]</b> Memuat draf email statis default.")
         return fallback_email
 
