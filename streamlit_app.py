@@ -666,9 +666,9 @@ def run_agent_analyst(company_name, url, gemini_key, log_placeholder=None):
         return fallback_report
 
 # --- AGENT 3: THE COPYWRITER ---
-def run_agent_copywriter(company_name, url, analysis_report, gemini_key, log_placeholder=None):
+def run_agent_copywriter(company_name, url, analysis_report, gemini_key, log_placeholder=None, output_type="Cold Outreach Proposal (7-Step Freelance MVP Blueprint)"):
     """
-    Generates high-fidelity outreach emails or ad copywriting.
+    Generates high-fidelity outreach emails or startup pitch decks.
     """
     logs = []
     def add_log(msg):
@@ -679,40 +679,97 @@ def run_agent_copywriter(company_name, url, analysis_report, gemini_key, log_pla
 
     add_log(f"🚀 <b>[Agent 3 - The Copywriter]</b> Mengaktifkan modul Penulisan Persuasif...")
     add_log(f"📝 Membaca laporan analisis dari Agent 2 untuk merumuskan sudut pandang pitch terbaik...")
-    add_log("💡 Merancang draf email menggunakan model Two-Step Friction Reduction (Penawaran Uji Coba Gratis 7 Hari)...")
     
-    prompt = f"""
-    Anda adalah **Agent 3: The Copywriter Master**, mempraktikkan **Evan Fisher's 7-Step High-Converting Proposal Formula (Freelance MVP Blueprint)**.
-    Tulis penawaran proposal bisnis kelas dunia (cold outreach / cover letter) dalam Bahasa Inggris yang meniru gaya legendaris Evan Fisher ($5B+ raised capital, premium B2B consulting authority, outcome-focused, anti needy language).
-    Email ini ditujukan untuk pemilik butik {company_name} (website: {url}).
+    if "pitch deck" in output_type.lower():
+        add_log("💡 Merancang draf Pitch Deck 8-Slide menggunakan model a16z & Tiger Global Standard...")
+        prompt = f"""
+        Anda adalah **Agent 3: The Pitch Deck Architect**, mempraktikkan **Evan Fisher's Strategic Pitch Deck Architecture (a16z/Tiger Global Standard)**.
+        Susun struktur narasi pitch deck bisnis kelas dunia untuk startup/solusi AI yang akan ditawarkan ke {company_name} (website: {url}) dalam bentuk draf slide premium dengan wibawa mantan Investment Banker dari Swiss ($5B+ raised capital, premium B2B consulting authority, outcome-focused, anti needy language).
 
-    **Laporan Analisis Celah Performa (Agent 2)**:
-    \"\"\"{analysis_report}\"\"\"
+        **Laporan Analisis Celah Performa (Agent 2)**:
+        \"\"\"{analysis_report}\"\"\"
 
-    **STRUKTUR WAJIB PROPOSAL (7-STEPS) — JANGAN DILANGGAR:**
-    1. **Break the Barrier**: Tulislah dengan percaya diri tinggi sejak kalimat pertama. Hindari bahasa meminta/memohon ("Please consider me", "Thank you for looking at my application"). Membawa wibawa mantan Investment Banker.
-    2. **Personalization & Context**: Sebutkan nama butik/perusahaan ({company_name}) dan singgung keunikan niche butik premium/koleksi desainer mereka di {url}.
-    3. **Hook & Twist**: Tunjukkan pemahaman mendalam tentang akar masalah teknis/bisnis mereka (kebocoran konversi pada Meta Ads/Click-to-WhatsApp, Fit & Sizing Anxiety pembeli pakaian mewah, CS Inbox Overload), serta *mengapa* masalah tersebut menghambat pertumbuhan ROAS mereka.
-    4. **Save the Day (Solution)**: Tawarkan solusi modular **24/7 AI Styling & Sales Concierge** yang kami buat secara otonom. Jangan daftarkan fitur-fitur teknis; sebutkan hasil bisnis konkret (+35% ROAS increase, zero-latency support, 75% support cost reduction).
-    5. **Authority & Social Proof**: Sebutkan rekam jejak sukses Nexus DualBrain AI (portofolio live terintegrasi, pendanaan Series A->IPO, optimasi sistem AI otonom).
-    6. **Be a Guide**: Berikan arahan langkah demi langkah yang jelas tentang bagaimana proyek akan dieksekusi secara asinkron.
-    7. **Hammer it Home (Strict Async CTA & P.S. Play)**:
-       - **Strictly Asynchronous / No Calls**: Secara tegas nyatakan bahwa Anda mengoperasikan mesin komputasi AI murni secara otonom dan asinkron demi efisiensi 100%. Tolak panggilan suara/video (Zoom/GMeet/Teams).
-       - **CTA**: Minta mereka mengirimkan brief terstruktur atau mengonfirmasi ketertarikan untuk melihat **Customized 90-Second Video Walkthrough** (Demo interaktif asisten AI di replika toko mereka).
-       - **P.S. Play**: Gunakan P.S. (Post Scriptum) di baris terbawah untuk menawarkan penawaran nilai tambah: **Uji Coba Gratis 7 Hari (Risk-Free 7-Day Pilot Program)** dengan langganan dikelola penuh seharga $199 AUD/bulan, termasuk pemeliharaan mingguan (AI Smart Tuning & Chat Log Auditing) untuk melatih model secara terus-menerus.
+        **STRUKTUR ALUR PITCH DECK STRATEGIS (8 SLIDES) — WAJIB DIIKUTI:**
+        - **Slide 1: Executive Summary & Team Bio** (menyoroti kepakaran pendiri, value-based positioning premium, $5B+ raised Series A->IPO, no needy language).
+        - **Slide 2: Problem** (frustrasi terbesar pasar {company_name} yaitu Sizing & Fit Anxiety pembeli kemewahan, kebocoran ROAS iklan Meta, dan inbox overload operasional yang didukung data riil).
+        - **Slide 3: Solution** (value proposition unik yaitu 24/7 AI Styling & Support Concierge otonom).
+        - **Slide 4: System Architecture / Core Tech** (visualisasi premium arsitektur AI modular otonom multi-agent).
+        - **Slide 5: Ideal Client Profile (ICP) & Market Size** (TAM/SAM/SOM yang realistis untuk pangsa pasar ritel fashion mewah).
+        - **Slide 6: Business & Monetization Model** (bagaimana model managed subscription $199 AUD/bulan dengan continuous growth tuning memotong biaya operasional hingga 75%).
+        - **Slide 7: Traction & Financial Modeling** (proyeksi peningkatan konversi +35% dan penghematan biaya operasional CS).
+        - **Slide 8: The Deal / Ask & Use of Funds** (penawaran pendanaan/kemitraan presisi: Pilot Program Gratis 7 Hari).
 
-    Kembalikan output proposal email ini dalam format Markdown yang rapi dengan info target di atasnya.
-    """
+        Terapkan prinsip **Anti 'Investment Banker Special'** (maksimal 1-2 kalimat per poin data, visual-narrative yang ringkas dan mematikan).
+        Kembalikan output pitch deck ini dalam format Markdown yang rapi dan elegan.
+        """
+    else:
+        add_log("💡 Merancang draf email menggunakan model Two-Step Friction Reduction (Penawaran Uji Coba Gratis 7 Hari)...")
+        prompt = f"""
+        Anda adalah **Agent 3: The Copywriter Master**, mempraktikkan **Evan Fisher's 7-Step High-Converting Proposal Formula (Freelance MVP Blueprint)**.
+        Tulis penawaran proposal bisnis kelas dunia (cold outreach / cover letter) dalam Bahasa Inggris yang meniru gaya legendaris Evan Fisher ($5B+ raised capital, premium B2B consulting authority, outcome-focused, anti needy language).
+        Email ini ditujukan untuk pemilik butik {company_name} (website: {url}).
+
+        **Laporan Analisis Celah Performa (Agent 2)**:
+        \"\"\"{analysis_report}\"\"\"
+
+        **STRUKTUR WAJIB PROPOSAL (7-STEPS) — JANGAN DILANGGAR:**
+        1. **Break the Barrier**: Tulislah dengan percaya diri tinggi sejak kalimat pertama. Hindari bahasa meminta/memohon ("Please consider me", "Thank you for looking at my application"). Membawa wibawa mantan Investment Banker.
+        2. **Personalization & Context**: Sebutkan nama butik/perusahaan ({company_name}) dan singgung keunikan niche butik premium/koleksi desainer mereka di {url}.
+        3. **Hook & Twist**: Tunjukkan pemahaman mendalam tentang akar masalah teknis/bisnis mereka (kebocoran konversi pada Meta Ads/Click-to-WhatsApp, Fit & Sizing Anxiety pembeli pakaian mewah, CS Inbox Overload), serta *mengapa* masalah tersebut menghambat pertumbuhan ROAS mereka.
+        4. **Save the Day (Solution)**: Tawarkan solusi modular **24/7 AI Styling & Sales Concierge** yang kami buat secara otonom. Jangan daftarkan fitur-fitur teknis; sebutkan hasil bisnis konkret (+35% ROAS increase, zero-latency support, 75% support cost reduction).
+        5. **Authority & Social Proof**: Sebutkan rekam jejak sukses Nexus DualBrain AI (portofolio live terintegrasi, pendanaan Series A->IPO, optimasi sistem AI otonom).
+        6. **Be a Guide**: Berikan arahan langkah demi langkah yang jelas tentang bagaimana proyek akan dieksekusi secara asinkron.
+        7. **Hammer it Home (Strict Async CTA & P.S. Play)**:
+           - **Strictly Asynchronous / No Calls**: Secara tegas nyatakan bahwa Anda mengoperasikan mesin komputasi AI murni secara otonom dan asinkron demi efisiensi 100%. Tolak panggilan suara/video (Zoom/GMeet/Teams).
+           - **CTA**: Minta mereka mengirimkan brief terstruktur atau mengonfirmasi ketertarikan untuk melihat **Customized 90-Second Video Walkthrough** (Demo interaktif asisten AI di replika toko mereka).
+           - **P.S. Play**: Gunakan P.S. (Post Scriptum) di baris terbawah untuk menawarkan penawaran nilai tambah: **Uji Coba Gratis 7 Hari (Risk-Free 7-Day Pilot Program)** dengan langganan dikelola penuh seharga $199 AUD/bulan, termasuk pemeliharaan mingguan (AI Smart Tuning & Chat Log Auditing) untuk melatih model secara terus-menerus.
+
+        Kembalikan output proposal email ini dalam format Markdown yang rapi dengan info target di atasnya.
+        """
     
     try:
         response_text = call_llm_api(st.session_state.get("provider", "Google AI Studio"), st.session_state.get("model", "gemini-1.5-flash"), prompt, gemini_key)
-        add_log("✅ <b>[Agent 3]</b> Selesai! Email Outreach Masterpiece berhasil dibuat.")
+        add_log("✅ <b>[Agent 3]</b> Selesai! Dokumen outreach/pitch berhasil dibuat.")
         return response_text
     except Exception as e:
         add_log(f"❌ Gagal memanggil API Gemini: {str(e)}")
-        # Fallback email (Evan Fisher Masterpiece)
-        fallback_email = f"""### ✉️ PROPOSAL OUTREACH PREMIUM (EVAN FISHER BLUEPRINT) — {company_name}
-        
+        if "pitch deck" in output_type.lower():
+            fallback_deck = f"""### 📋 PREMIUM 8-SLIDE STARTUP PITCH DECK — {company_name}
+            
+#### 📇 Slide 1: Executive Summary & Team Bio
+* **Narrative**: Verdiawan Raafi / Nexus DualBrain AI. $5B+ raised capital from Tier-1 VCs (a16z, Sequoia, SoftBank). Former Swiss investment banking rigor applied to automated AI scaling.
+* **Core Value**: 100% autonomous agent systems built to capture lost boutique ROAS without operational calls or meetings.
+
+#### 🛑 Slide 2: The Problem
+* **Anxiety**: Luxury shoppers abandon cart due to fit/sizing ambiguity (+30% drop-off).
+* **Friction**: Customer Service team wastes 20+ weekly hours on basic sizing, Afterpay, and weekend logistics.
+
+#### 💡 Slide 3: The Solution
+* **Concierge**: 24/7 Autonomous AI Styling & Support Specialist embedded directly into Meta Ads & WhatsApp Business.
+* **Response**: Solves sizing fit anxiety in 3 seconds, boosting buyer confidence instantly.
+
+#### ⚙️ Slide 4: System Architecture
+* **Stack**: DualBrain Multi-Agent Router (Researcher ➡️ Analyst ➡️ Copywriter) built on state-of-the-art Claude/Gemini API endpoints with sandbox validation.
+
+#### 🎯 Slide 5: ICP & Market Size
+* **Market**: High-end contemporary fashion retailers generating $50k - $500k monthly.
+* **TAM**: $4.2B APAC Boutique Premium E-commerce space.
+
+#### 💰 Slide 6: Business & Monetization Model
+* **Pilot**: 7-day zero-risk trial.
+* **Subscription**: $199 AUD/month flat rate. 100% managed service including weekly log auditing.
+
+#### 📊 Slide 7: Traction & Financials
+* **Impact**: Average boutique trials show +35% ROAS lift and 75% reduction in CS response latency.
+
+#### 🤝 Slide 8: The Deal / Ask
+* **Request**: Send structured brand profile brief asynchronously. Let our engine deploy a custom 90-second mockup walkthrough for {company_name} within 24 hours."""
+            add_log("🔄 <b>[Agent 3]</b> Memuat draf pitch deck statis default.")
+            return fallback_deck
+        else:
+            # Fallback email (Evan Fisher Masterpiece)
+            fallback_email = f"""### ✉️ PROPOSAL OUTREACH PREMIUM (EVAN FISHER BLUEPRINT) — {company_name}
+            
 * **Target Penerima**: `hello@{company_name.lower().replace(" ", "")}.com.au`
 🚀 **The Risk-Free 7-Day Trial & Continuous Growth Offer:**
 * **7-Day Free Trial**: We will fully customize, program, and launch the AI Concierge on your store for 7 days at absolutely zero cost (no credit card required).
@@ -727,8 +784,8 @@ Warm regards,
 **Verdiawan Raafi**  
 Lead AI Systems Engineer & Freelance MVP (Inspired by Evan Fisher Frameworks)  
 Nexus DualBrain AI"""
-        add_log("🔄 <b>[Agent 3]</b> Memuat draf email statis default.")
-        return fallback_email
+            add_log("🔄 <b>[Agent 3]</b> Memuat draf email statis default.")
+            return fallback_email
 
 # ─────────────────────────────────────────────────────────────────────────────
 # FRONTEND INTERFACE DESIGN (Streamlit)
@@ -973,6 +1030,13 @@ with tab_agents:
     with col_ag2:
         target_loc = st.text_input("Target Lokasi Iklan", value="Singapore", key="loc_in_m")
         
+    creative_output_type = st.selectbox(
+        "Format Output Kreatif (Evan Fisher Framework)",
+        options=["Cold Outreach Proposal (7-Step Freelance MVP Blueprint)", "8-Slide Premium Pitch Deck (a16z/Tiger Global Standard)"],
+        index=0,
+        help="Pilih format output untuk Agent 3 yang dirancang secara strategis dengan keahlian Evan Fisher."
+    )
+        
     run_pipeline = st.button("🚀 JALANKAN METAPROFILE OPTIMIZER PIPELINE", key="btn_pipeline")
     
     if run_pipeline:
@@ -1003,9 +1067,10 @@ with tab_agents:
                 # 3. JALANKAN COPYWRITER
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.markdown(f"<span class='agent-badge agent-3-badge'>Agent 3: The Creative Copywriter</span>", unsafe_allow_html=True)
-                creative_ad_copies = run_agent_copywriter(niche_input_main, competitors[0]["url"] if competitors else "https://example.com", analysis_result, gemini_key, log_placeholder=log_placeholder)
+                creative_ad_copies = run_agent_copywriter(niche_input_main, competitors[0]["url"] if competitors else "https://example.com", analysis_result, gemini_key, log_placeholder=log_placeholder, output_type=creative_output_type)
                 
-                st.success("✉️ Agent 3: High-ROAS Meta Ad Copies Berhasil Dihasilkan!")
+                success_msg = "✉️ Agent 3: Pitch Deck Premium Berhasil Dihasilkan!" if "pitch deck" in creative_output_type.lower() else "✉️ Agent 3: Proposal Cold Outreach Berhasil Dihasilkan!"
+                st.success(success_msg)
                 st.markdown("<div class='ad-container'>" + creative_ad_copies + "</div>", unsafe_allow_html=True)
 
 # --- TAB 3: CUSTOM SANDBOX TEST SUITE ---
